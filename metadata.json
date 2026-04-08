@@ -1,0 +1,5 @@
+{
+  "name": "Lotto Party",
+  "description": "A real-time multi-user lottery drawing app where friends can join, pick numbers, and watch the draw live.",
+  "requestFramePermissions": []
+}

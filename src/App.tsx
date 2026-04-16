@@ -134,6 +134,15 @@ export default function App() {
     }
   };
 
+  const handleLogout = () => {
+    socket.emit("remove_participant", socket.id);
+    setIsJoined(false);
+    setName("");
+    setSelectedNumbers([]);
+    setIsHost(false);
+    setResults(null);
+  };
+
   const myParticipant = participants.find(p => p.id === socket.id);
 
   return (
@@ -157,9 +166,19 @@ export default function App() {
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
             LOTTO PARTY
           </h1>
-          <p className="text-gray-400 text-lg max-w-md mx-auto font-medium">
+          <p className="text-gray-400 text-lg max-w-md mx-auto font-medium mb-8">
             친구들과 함께 번호를 고르고 실시간 추첨을 지켜보세요. 1등의 주인공은 누구일까요?
           </p>
+          {isJoined && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              onClick={handleLogout}
+              className="px-6 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 text-xs font-bold uppercase tracking-widest hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all"
+            >
+              Logout / Exit
+            </motion.button>
+          )}
         </header>
 
         <main className="space-y-12">
@@ -354,7 +373,9 @@ export default function App() {
                   <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="text-center md:text-left">
                       <h3 className="text-2xl font-black text-white mb-2">나의 선택 번호</h3>
-                      <p className="text-gray-400 font-medium">추첨 번호와 대조하여 실시간으로 확인하세요.</p>
+                      <p className="text-gray-400 font-medium">
+                        {results ? "추첨 결과가 확인되었습니다!" : isDrawing ? "추첨이 진행 중입니다..." : "추첨이 시작되기를 기다리고 있습니다."}
+                      </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-4 md:gap-6">
                       {myParticipant.numbers.map((num) => (
@@ -362,9 +383,9 @@ export default function App() {
                           key={num} 
                           className={`
                             w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center font-black text-xl md:text-3xl shadow-xl transition-all duration-500
-                            ${winningNumbers.includes(num) 
+                            ${results && winningNumbers.includes(num) 
                               ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white border-4 border-white/30 shadow-orange-500/30 scale-110" 
-                              : num === bonusNumber 
+                              : results && num === bonusNumber 
                                 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white border-4 border-white/30 shadow-blue-500/30 scale-110" 
                                 : "bg-white/10 text-gray-400 border border-white/5"}
                           `}
